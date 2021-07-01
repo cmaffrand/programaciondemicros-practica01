@@ -52,23 +52,23 @@ int main( void )
 			  ledValue1 = ledMem;
 		  }
     	  // Asigación de salidas
-		  gpioWrite( LEDA, ledValueA );
+		  gpioWrite( LEDB, ledValueA );
 		  gpioWrite( LED1, ledValue1 );
 		  gpioWrite( LED2, ledValue2 );
 		  gpioWrite( LED3, ledValue3 );
       }
 	   // Si no se cumple el delay pooling de botones.
       else {
-    	  if (gpioRead( BUTTON3 ) == OFF) {
+    	  if (gpioRead( TEC3 ) == OFF) {
     		  delayTime = 750;
     		  delayConfig( &NonBlockingDelay, delayTime );
     	  }
-		  if (gpioRead( BUTTON2 ) == OFF) {
+		  if (gpioRead( TEC2 ) == OFF) {
 			  delayTime = 150;
 			  delayConfig( &NonBlockingDelay, delayTime );
 		  }
-		  if (gpioRead( BUTTON1 ) == OFF) dirValue = TRUE;
-		  if (gpioRead( BUTTON4 ) == OFF) dirValue = FALSE;
+		  if (gpioRead( TEC1 ) == OFF) dirValue = TRUE;
+		  if (gpioRead( TEC4 ) == OFF) dirValue = FALSE;
       }
 
    }
