@@ -29,46 +29,54 @@ int main( void )
    bool_t ledValue2    = 0;
    bool_t ledValue3    = 0;
    bool_t ledMem       = 0;
+   bool_t timeChange   = 0;
 
    // ---------- REPETIR POR SIEMPRE --------------------------
    while( TRUE ) {
 
 	   // Si se cumple el delay no bloqueante asigno salidas.
 	   if (delayRead(&NonBlockingDelay) == TRUE) {
-		   if (dirValue == FALSE) {
-			  // Rotacion a la derecha
-			  ledMem    = ledValueA;
-			  ledValueA = ledValue1;
-			  ledValue1 = ledValue2;
-			  ledValue2 = ledValue3;
-			  ledValue3 = ledMem;
-		  }
-		  else {
-			  // Rotacion a la izquierda
-			  ledMem    = ledValueA;
-			  ledValueA = ledValue3;
-			  ledValue3 = ledValue2;
-			  ledValue2 = ledValue1;
-			  ledValue1 = ledMem;
-		  }
-    	  // Asigación de salidas
-		  gpioWrite( LEDB, ledValueA );
-		  gpioWrite( LED1, ledValue1 );
-		  gpioWrite( LED2, ledValue2 );
-		  gpioWrite( LED3, ledValue3 );
+		    if (dirValue == FALSE) {
+				// Rotacion a la derecha
+				ledMem    = ledValueA;
+				ledValueA = ledValue1;
+				ledValue1 = ledValue2;
+				ledValue2 = ledValue3;
+				ledValue3 = ledMem;
+		   	}
+		  	else {
+				// Rotacion a la izquierda
+				ledMem    = ledValueA;
+				ledValueA = ledValue3;
+				ledValue3 = ledValue2;
+				ledValue2 = ledValue1;
+				ledValue1 = ledMem;
+		  	}
+    	 	 // Asigación de salidas
+			gpioWrite( LEDB, ledValueA );
+			gpioWrite( LED1, ledValue1 );
+			gpioWrite( LED2, ledValue2 );
+			gpioWrite( LED3, ledValue3 );
+
+			// Se vuelve a activar el cambio de base de tiempo
+			timeChange   = 0;
+
       }
 	   // Si no se cumple el delay pooling de botones.
       else {
-    	  if (gpioRead( TEC3 ) == OFF) {
-    		  delayTime = 750;
-    		  delayConfig( &NonBlockingDelay, delayTime );
-    	  }
-		  if (gpioRead( TEC2 ) == OFF) {
-			  delayTime = 150;
-			  delayConfig( &NonBlockingDelay, delayTime );
-		  }
-		  if (gpioRead( TEC1 ) == OFF) dirValue = TRUE;
-		  if (gpioRead( TEC4 ) == OFF) dirValue = FALSE;
+    	  	if (timeChange == 0) {
+				if (gpioRead( TEC3 ) == OFF) {
+					delayTime = 750;
+					delayConfig( &NonBlockingDelay, delayTime );
+				}
+				if (gpioRead( TEC2 ) == OFF) {
+					delayTime = 150;
+					delayConfig( &NonBlockingDelay, delayTime );
+				}
+				timeChange   = 1;
+			}
+		  	if (gpioRead( TEC1 ) == OFF) dirValue = TRUE;
+		  	if (gpioRead( TEC4 ) == OFF) dirValue = FALSE;
       }
 
    }
