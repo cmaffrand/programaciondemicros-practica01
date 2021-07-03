@@ -1,5 +1,6 @@
 /*=============================================================================
- * Author: Carlos Maffrand <carlosmaffrand5@gmail.com>
+ * Authors: Carlos Maffrand 	<carlosmaffrand5@gmail.com>
+ *			Hernan Gomez Molino	<hernangomezmolino@gmail.com>
  * Date: 2021/07/02
  *===========================================================================*/
 
@@ -28,55 +29,37 @@ int main( void )
 	   delay_t NonBlockingDelay;
 	   delayConfig( &NonBlockingDelay, delayTime );
 
-	   // Crear varias variables del tipo booleano
+	   // Crear varias variables
+	   gpioMap_t * psecuencia = secuencia;
+	   bool_t dirValueFlag    = FALSE;
+	   bool_t timeChangeFlag  = FALSE;
 
-	   // Crear varias variables del tipo entero
-	   const gpioMap_t psecuencia[] = {LEDB, LED1, LED2, LED3};
-	   const uint8_t ultimoLed = sizeof(psecuencia)/sizeof(gpioMap_t);
-	   uint8_t estado = 0;
-	   // Crear varias variables del tipo booleano
-	   bool_t dirValue    = FALSE;
-	   bool_t timeChange   = FALSE;
-
-	   apagarLeds();
-
+   // Mensaje de inició del programa
+   printf("Secuencia Comenzada\n");
    // ----- Repeat for ever -------------------------
    while( true ) {
 
 	   if (delayRead(&NonBlockingDelay) == TRUE) {
-		   if (dirValue == FALSE) {
-		   		// Rotacion a la derecha
-			   	estado++;
-			   	if (estado > ultimoLed-1)  estado = 0;
-		   }
-		   else {
-		   // Rotacion a la izquierda
-			   estado--;
-			   if (estado > ultimoLed-1) estado = ultimoLed-1;
-		   }
-
-		   if (!(apagarLeds())) {while(true){}}
-			if (!(encenderLed(psecuencia[estado]))) {while(true){}}
-			//  Finaliza la secuencia por error.
-
+			activarSecuencia(psecuencia, dirValueFlag);
 			// Se vuelve a activar el cambio de base de tiempo
-			timeChange   = FALSE;
+			timeChangeFlag   = FALSE;
 	   }
 	   // Si no se cumple el delay pooling de botones.
 		 else {
-			if (timeChange == FALSE) {
+			if (timeChangeFlag == FALSE) {
 				if (leerTecla( TEC3 ) == OFF) {
 					delayTime = 750;
 					delayConfig( &NonBlockingDelay, delayTime );
+					timeChangeFlag   = TRUE;
 				}
 				if (leerTecla( TEC2 ) == OFF) {
 					delayTime = 150;
 					delayConfig( &NonBlockingDelay, delayTime );
+					timeChangeFlag   = TRUE;
 				}
-				timeChange   = TRUE;
 			}
-			if (leerTecla( TEC1 ) == OFF) dirValue = TRUE;
-			if (leerTecla( TEC4 ) == OFF) dirValue = FALSE;
+			if (leerTecla( TEC1 ) == OFF) dirValueFlag = TRUE;
+			if (leerTecla( TEC4 ) == OFF) dirValueFlag = FALSE;
 		 }
 
 
